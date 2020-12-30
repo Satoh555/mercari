@@ -6,6 +6,7 @@ import requests
 from fake_useragent import UserAgent
 import pandas as pd
 import re
+import sys, csv, operator
 
 
 
@@ -37,16 +38,16 @@ print(csv_lists)
 
 
 def search_mercari(search_words):
-
+    page = 1
     url = "https://www.mercari.com/jp/search/?keyword=" + search_words + "&category_root=&brand_name=&brand_id=&size_group=&price_min=1000&price_max=&item_condition_id%5B1%5D=1&item_condition_id%5B2%5D=1&item_condition_id%5B3%5D=1&item_condition_id%5B4%5D=1&status_on_sale=1"
     ua= UserAgent()
     useragent = ua.random
     header = {'User-Agent': str(ua.chrome)}
-    res = requests.get(url, headers=header)
-    soup = BeautifulSoup(res.content, 'html.parser')
+    # res = requests.get(url, headers=header)
+    # soup = BeautifulSoup(res.content, 'html.parser')
+    # items = browser.find_elements_by_css_selector(".items-box")
     time.sleep(3)
     browser = webdriver.Chrome()
-    page = 1
     columns = ["title", "url", "price"]
     df = pd.DataFrame(columns=columns)
     # 配列名を指定する
@@ -55,6 +56,7 @@ def search_mercari(search_words):
             # ブラウザで検索
             browser.get(url)
             # 商品ごとのHTMLを全取得
+            res = requests.get(url, headers=header)
             soup = BeautifulSoup(res.content, 'html.parser')
             items = soup.find_all(class_="items-box")
             # 何ページ目を取得しているか表示
@@ -77,6 +79,9 @@ def search_mercari(search_words):
         # 得たデータをCSVにして保存
 
         df.to_csv(search_words+".csv", encoding='utf_8_sig')
+
+
+
     print("Finish!")
 
 
